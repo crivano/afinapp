@@ -168,8 +168,10 @@ const K_MPM       = 0.90;    // MPM: aceita o 1º pico ≥ 90% do pico máximo
 let audioCtx=null, analyser=null, buf=null;
 let xbuf=null, eprefix=null, nsdf=null, tauMin=0, tauMax=0;
 let micOn=false;
-let a4=440, vizMode='auto', effClef='sol';
-let rd=true, hs=true;
+/* defaults de primeiro uso: modo Piano, sem Leitura e sem Histórico;
+   preferências salvas no localStorage sobrepõem (loadPrefs) */
+let a4=440, vizMode='piano', effClef='sol';
+let rd=false, hs=false;
 let bravura=false;
 
 let histRaw=[], unvoiced=99, idle=true;
@@ -650,12 +652,15 @@ function setHistory(on){
 function loadPrefs(){
   let p=null;
   try{ p=JSON.parse(localStorage.getItem('afinador-canto')||'null'); }catch(_){}
-  if(!p) return;
-  if(['auto','sol','fa','piano'].includes(p.v)) vizMode=p.v;
-  if(typeof p.a==='number' && p.a>=415 && p.a<=465){ a4=Math.round(p.a); $('a4val').textContent=a4+' Hz'; }
-  if(p.r===false) setReadout(false);
-  if(p.h===false) setHistory(false);
-  if(p.o===true) setA4Open(true);
+  if(p){
+    if(['auto','sol','fa','piano'].includes(p.v)) vizMode=p.v;
+    if(typeof p.a==='number' && p.a>=415 && p.a<=465){ a4=Math.round(p.a); $('a4val').textContent=a4+' Hz'; }
+    if(typeof p.r==='boolean') rd=p.r;
+    if(typeof p.h==='boolean') hs=p.h;
+    if(typeof p.o==='boolean') a4Open=p.o;
+  }
+  /* sincroniza o DOM com o estado, seja default de 1º uso, seja pref salva */
+  setReadout(rd); setHistory(hs); setA4Open(a4Open);
 }
 
 function applyVizMode(){

@@ -181,6 +181,8 @@ resetar preferências existentes). Schema JSON:
 `{ v: vizMode('auto'|'sol'|'fa'|'piano'), r: leitura visível, h: histórico
 visível, a: A4 em Hz (415–465), o: painel de referência aberto }`.
 Toda mudança de preferência deve chamar `savePrefs()`.
+**Defaults de primeiro uso** (sem chave salva): modo Piano, Leitura e
+Histórico ocultos; qualquer mudança do usuário é persistida e passa a valer.
 
 ## Como testar sem microfone (importante)
 
