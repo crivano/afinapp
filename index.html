@@ -17,6 +17,7 @@
     font-display: swap;
   }
   :root{
+    color-scheme:dark;   /* popups nativos (lista do <select>) no tema escuro */
     --bg:#0d1117; --card:#151b26; --line:#2a3346; --tx:#e8edf6; --mut:#8b98ad;
     --acc:#7db3ff; --ok:#3ddc84; --warn:#ffb03a; --err:#ff5f6d;
   }
@@ -35,6 +36,8 @@
   .btn{border:1px solid var(--line); background:#1b2333; color:var(--tx); padding:9px 13px; border-radius:10px; font-size:13px; cursor:pointer}
   .btn:hover{border-color:var(--acc)}
   .btn.on{border-color:var(--acc); color:#bcd7ff; background:#1d2c49}
+  /* microfone ligado: verde (--ok) para dar mais destaque ao estado */
+  #btnMic.on{border-color:var(--ok); color:#bff5da; background:#123524; box-shadow:0 0 14px rgba(61,220,132,.28)}
   main{width:100%; margin:0; padding:0 0 20px; display:grid; gap:14px}
   .viz{width:100%}
   .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 20px; margin:0 14px}
@@ -46,8 +49,17 @@
   .sacc{font-size:36px; fill:#dfe6f2; font-family:'Segoe UI Symbol','Noto Music',serif}
   .stem{stroke-width:2.4; fill:none; stroke-linecap:round}
   .hide{display:none!important}
-  #piano{width:100%; height:auto; max-height:62vh; display:block; touch-action:none; user-select:none}
+  #piano{width:100%; height:auto; display:block; touch-action:none; user-select:none}
   .wkg,.bkg{cursor:pointer}
+  /* flauta doce: desenho centralizado como a pauta; botões de nota clicáveis
+     numa faixa HTML própria (glissando por toque exige touch-action:none na
+     faixa — que é pequena — sem travar o scroll no resto do desenho) */
+  svg#flute{width:min(96vw,900px); height:auto; display:block; margin:0 auto}
+  #fnotes{display:grid; grid-template-columns:repeat(12,1fr); gap:6px;
+          width:min(96vw,900px); margin:12px auto 0; touch-action:none; user-select:none}
+  #fnotes button{border:1px solid var(--line); background:#1b2333; color:var(--tx);
+                 border-radius:10px; font-size:14px; padding:9px 0; cursor:pointer; font-family:inherit}
+  #fnotes button:hover{border-color:var(--acc)}
   .wk{fill:#f2f5fa; stroke:#0d1117; stroke-width:1.2}
   .bk{fill:#151a24; stroke:#05070b; stroke-width:1}
   .wl{fill:#8b98ad; font-size:11px; text-anchor:middle; pointer-events:none}
@@ -62,9 +74,16 @@
   .wkg.lit .mkw,.wkg.lit .mlw{stroke:#3d5372}
   .pianohint{margin:8px 0 0; color:var(--mut); font-size:12.5px; text-align:center}
   .controls{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-top:6px}
-  .seg{display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden}
-  .seg button{background:none; border:none; color:var(--mut); padding:8px 14px; cursor:pointer; font-size:14px}
-  .seg button.on{background:#1d2c49; color:#bcd7ff}
+  /* seletor de visualização (drop-down): visual de botão, seta desenhada em CSS */
+  .sel{appearance:none; -webkit-appearance:none; font-family:inherit; border:1px solid var(--line);
+       border-radius:10px; background-color:#1b2333; color:var(--tx); padding:9px 32px 9px 13px;
+       font-size:13px; cursor:pointer;
+       background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),
+                        linear-gradient(135deg,var(--mut) 50%,transparent 50%);
+       background-position:calc(100% - 17px) calc(50% - 2px),calc(100% - 12px) calc(50% - 2px);
+       background-size:5px 5px; background-repeat:no-repeat}
+  .sel:hover{border-color:var(--acc)}
+  .sel:focus-visible{outline:none; border-color:var(--acc); color:#bcd7ff}
   .a4ctl{display:flex; align-items:center; border:1px solid var(--line); border-radius:10px; overflow:hidden}
   #a4tgl{border:none; background:#1b2333; color:var(--tx); padding:9px 13px; font-size:13px; cursor:pointer}
   #a4tgl:hover{color:#bcd7ff}
@@ -73,10 +92,18 @@
   #a4body b{color:var(--tx); min-width:62px; text-align:center; font-variant-numeric:tabular-nums}
   #a4body button{width:26px; height:26px; border-radius:7px; border:1px solid var(--line); background:#141b28; color:var(--tx); cursor:pointer; font-size:15px}
   .readout{text-align:center; padding:22px}
+  /* modo Afinador: o painel de leitura é a visualização principal */
+  #cardRead.solo{padding:34px 20px 30px}
+  #cardRead.solo .note{font-size:clamp(88px,18vw,150px)}
+  #cardRead.solo .sub{font-size:16px; margin-top:12px}
+  #cardRead.solo .tuner{max-width:640px; margin-top:26px}
+  #cardRead.solo .meters{margin-top:24px}
   .note{font-size:clamp(64px,14vw,110px); font-weight:700; line-height:1; letter-spacing:1px}
   .note.dim{opacity:.35}
-  .note.intune{color:var(--ok); text-shadow:0 0 26px rgba(61,220,132,.35)}
-  .note.near{color:#ffd27a}
+  /* a cor do nome da nota vem da classe de altura (PC_COLOR, inline no updateDisplay);
+     intuno/quase ficam marcados apenas pelo brilho */
+  .note.intune{text-shadow:0 0 26px rgba(61,220,132,.35)}
+  .note.near{text-shadow:0 0 22px rgba(255,210,122,.30)}
   .note .acc{font-style:normal; font-size:.8em}
   .note .oct{font-size:.38em; vertical-align:super; color:var(--acc); letter-spacing:0}
   .sub{color:var(--mut); font-size:15px; margin-top:8px; min-height:20px; font-variant-numeric:tabular-nums}
@@ -107,13 +134,27 @@
   </div>
   <div class="hbtns">
     <button id="btnMic" class="btn" type="button" title="Ligar/desligar o microfone">Microfone</button>
-    <div class="seg" id="segClef">
-      <button data-clef="auto" class="on" type="button">Auto</button>
-      <button data-clef="sol" type="button">Clave de Sol</button>
-      <button data-clef="fa" type="button">Clave de Fá</button>
-      <button data-clef="piano" type="button">Piano</button>
-    </div>
-    <button id="tglRead" class="btn on" type="button" title="Mostrar/ocultar o painel de leitura (nota, cents, sinal)">Leitura</button>
+    <select id="selViz" class="sel" title="Modo de visualização" aria-label="Modo de visualização">
+      <option value="afinador">Afinador</option>
+      <optgroup label="Pauta">
+        <option value="auto">Pauta automática</option>
+        <option value="sol">Clave de Sol</option>
+        <option value="fa">Clave de Fá</option>
+      </optgroup>
+      <optgroup label="Piano">
+        <option value="piano">Piano completo</option>
+        <option value="baixo">Baixo</option>
+        <option value="baritono">Barítono</option>
+        <option value="tenor">Tenor</option>
+        <option value="contratenor">Contratenor</option>
+        <option value="contralto">Contralto</option>
+        <option value="mezzo">Mezzo-soprano</option>
+        <option value="soprano">Soprano</option>
+      </optgroup>
+      <optgroup label="Flauta doce">
+        <option value="flauta">Soprano germânica</option>
+      </optgroup>
+    </select>
     <button id="tglHist" class="btn on" type="button" title="Mostrar/ocultar o histórico de notas">Histórico</button>
     <div class="a4ctl">
       <button id="a4tgl" type="button" title="Afinação de referência (A4)">Referência</button>
@@ -127,10 +168,13 @@
 </header>
 
 <main>
-  <section class="viz">
+  <section class="viz" id="viz">
     <svg id="staff" viewBox="0 0 900 290" preserveAspectRatio="xMidYMid meet" aria-label="Pauta musical"></svg>
     <svg id="piano" class="hide" viewBox="0 0 1128 210" preserveAspectRatio="xMidYMid meet" aria-label="Teclado de piano"></svg>
     <p id="pianoHint" class="pianohint hide">Clique e segure uma tecla para ouvir a nota de referência — cante junto.</p>
+    <svg id="flute" class="hide" viewBox="0 0 980 900" preserveAspectRatio="xMidYMid meet" aria-label="Flauta doce soprano — digitação"></svg>
+    <div id="fnotes" class="hide"></div>
+    <p id="fluteHint" class="pianohint hide">Clique e segure uma nota para ouvir a nota de referência — cante junto.</p>
   </section>
 
   <section class="card readout" id="cardRead">
@@ -168,10 +212,10 @@ const K_MPM       = 0.90;    // MPM: aceita o 1º pico ≥ 90% do pico máximo
 let audioCtx=null, analyser=null, buf=null;
 let xbuf=null, eprefix=null, nsdf=null, tauMin=0, tauMax=0;
 let micOn=false;
-/* defaults de primeiro uso: modo Piano, sem Leitura e sem Histórico;
+/* defaults de primeiro uso: modo Piano completo, sem Histórico;
    preferências salvas no localStorage sobrepõem (loadPrefs) */
 let a4=440, vizMode='piano', effClef='sol';
-let rd=false, hs=false;
+let hs=false;
 let bravura=false;
 
 let histRaw=[], unvoiced=99, idle=true;
@@ -225,23 +269,25 @@ function staffSVG(){
     const midi=Math.round(lastNoteMidi), n=noteInfo(midi);
     const y=yDia(n.dia,ref);
     yMin=Math.min(yMin,y-104); yMax=Math.max(yMax,y+104);
+    /* cor da nota = classe de altura (mesma tabela do piano); ocioso = esmaecido.
+       Linhas suplementares e acidente acompanham a cor da nota. */
+    const col = idle ? '#7d8aa5' : PC_COLOR[((midi%12)+12)%12];
     let led='';
     if(n.dia<=ref-2){
       for(let k=1,c=Math.floor((ref-n.dia)/2); k<=c; k++){
         const ly=yDia(ref-2*k,ref);
-        led+=`<line x1="${STAFF.xN-32}" y1="${ly}" x2="${STAFF.xN+32}" y2="${ly}" class="sl"/>`;
+        led+=`<line x1="${STAFF.xN-32}" y1="${ly}" x2="${STAFF.xN+32}" y2="${ly}" class="sl" style="stroke:${col}"/>`;
       }
     }else if(n.dia>=ref+10){
       for(let k=1,c=Math.floor((n.dia-(ref+8))/2); k<=c; k++){
         const ly=yDia(ref+8+2*k,ref);
-        led+=`<line x1="${STAFF.xN-32}" y1="${ly}" x2="${STAFF.xN+32}" y2="${ly}" class="sl"/>`;
+        led+=`<line x1="${STAFF.xN-32}" y1="${ly}" x2="${STAFF.xN+32}" y2="${ly}" class="sl" style="stroke:${col}"/>`;
       }
     }
     let accEl='';
-    if(n.acc) accEl=`<text x="${STAFF.xN-48}" y="${y+13}" class="sacc">${n.acc==='#'?'♯':'♭'}</text>`;
+    if(n.acc) accEl=`<text x="${STAFF.xN-48}" y="${y+13}" class="sacc" style="fill:${col}">${n.acc==='#'?'♯':'♭'}</text>`;
     const up  = n.dia <= ref+4;                       // haste para cima até a linha central
     const stem= up ? `M${STAFF.xN+15.2} ${y-1} V${y-92}` : `M${STAFF.xN-15.2} ${y+1} V${y+92}`;
-    const col = idle ? '#7d8aa5' : (tuneClass===0 ? '#3ddc84' : '#7db3ff');
     const op  = idle ? 0.3 : 1;
     s+=`<g opacity="${op}">${led}${accEl}<path d="${stem}" class="stem" stroke="${col}"/>`+
        `<ellipse cx="${STAFF.xN}" cy="${y}" rx="17" ry="12" transform="rotate(-18 ${STAFF.xN} ${y})" fill="${col}"/></g>`;
@@ -252,7 +298,20 @@ function staffSVG(){
 }
 
 /* ---------------- piano ---------------- */
-const PMIN=33, PMAX=84;              // A1..C6 — a mesma faixa detectada pelo afinador
+const PMIN=36, PMAX=84;              // Dó2..Dó6 — piano completo
+/* teclado por tipo de voz: faixa aproximada de cada classificação vocal,
+   com margem para aquecimento; começa/termina em tecla branca de propósito */
+const VOICES={
+  baixo:{lo:40,hi:64,nome:'Baixo'},              // Mi2–Mi4
+  baritono:{lo:43,hi:67,nome:'Barítono'},        // Sol2–Sol4
+  tenor:{lo:48,hi:69,nome:'Tenor'},              // Dó3–Lá4
+  contratenor:{lo:52,hi:76,nome:'Contratenor'},  // Mi3–Mi5
+  contralto:{lo:53,hi:74,nome:'Contralto'},      // Fá3–Ré5
+  mezzo:{lo:57,hi:81,nome:'Mezzo-soprano'},      // Lá3–Lá5
+  soprano:{lo:60,hi:84,nome:'Soprano'}           // Dó4–Dó6
+};
+/* faixa do teclado do modo atual (null = modo sem piano) */
+function pianoRange(){ return vizMode==='piano' ? {lo:PMIN,hi:PMAX} : (VOICES[vizMode]||null); }
 const WKW=36, PAD=6, WKH=196, BKH=122, BKW=22;
 const BK_OFF={1:-4, 3:4, 6:-5, 8:0, 10:5};   // pequenos deslocamentos estéticos das pretas
 
@@ -261,13 +320,17 @@ function keyPath(x,y,w,h,r){          // retângulo com base arredondada, como t
 }
 
 /* mini-pauta nas teclas BRANCAS, logo acima do nome, na parte baixa da tecla.
-   Clave só em duas teclas-marco: a primeira do teclado (região de Fá) e a
-   primeira já da região de Sol (Dó4). Notas abaixo de Dó4 lêem em Fá,
-   de Dó4 para cima em Sol. */
+   Clave só em teclas-marco: a primeira do teclado (região de Fá) e a primeira
+   da região de Sol (Dó4) — no piano de Soprano as duas coincidem em Dó4.
+   Notas abaixo de Dó4 lêem em Fá, de Dó4 para cima em Sol.
+   gap/bottom/col/noteX são opcionais: a vista da flauta reutiliza esta pauta
+   em escala maior e com a nota colorida (col = cor inline); noteX reposiciona
+   a nota (default: colada no fim quando há clave, centro quando não há). */
 const MS={wGap:4.6, wBottom:166};
-function miniStaff(m, x0, w, withClef){
+function miniStaff(m, x0, w, withClef, gap=MS.wGap, bottom=MS.wBottom, col=null, noteX=null){
   const ref = m<60 ? 18 : 30;
-  const gap=MS.wGap, bottom=MS.wBottom, top=bottom-4*gap, half=gap/2;
+  const top=bottom-4*gap, half=gap/2;
+  const lw=2.83*gap, rx=(0.674*gap).toFixed(1), ry=(0.457*gap).toFixed(1);
   let s='';
   for(let i=0;i<5;i++){
     const ly=(bottom-i*gap).toFixed(1);
@@ -286,41 +349,41 @@ function miniStaff(m, x0, w, withClef){
   }
   const ni=noteInfo(m);
   const y=bottom-(ni.dia-ref)*half;
-  const nx = withClef ? x0+w-8 : x0+w/2;
-  const lw=13;
+  const nx = noteX!=null ? noteX : (withClef ? x0+w-8 : x0+w/2);
   let led='';
   if(ni.dia<=ref-2){
     for(let k=1;k<=Math.floor((ref-ni.dia)/2);k++){
       const ly=(bottom+k*gap).toFixed(1);
-      led+=`<line x1="${nx-lw/2}" y1="${ly}" x2="${nx+lw/2}" y2="${ly}" class="mlw"/>`;
+      led+=`<line x1="${nx-lw/2}" y1="${ly}" x2="${nx+lw/2}" y2="${ly}" class="mlw"${col?` style="stroke:${col}"`:''}/>`;
     }
   }else if(ni.dia>=ref+10){
     for(let k=1;k<=Math.floor((ni.dia-(ref+8))/2);k++){
       const ly=(top-k*gap).toFixed(1);
-      led+=`<line x1="${nx-lw/2}" y1="${ly}" x2="${nx+lw/2}" y2="${ly}" class="mlw"/>`;
+      led+=`<line x1="${nx-lw/2}" y1="${ly}" x2="${nx+lw/2}" y2="${ly}" class="mlw"${col?` style="stroke:${col}"`:''}/>`;
     }
   }
   const nx1=nx.toFixed(1), y1=y.toFixed(1);
   return s+led+
-    `<ellipse class="mnw" cx="${nx1}" cy="${y1}" rx="3.1" ry="2.1" transform="rotate(-18 ${nx1} ${y1})"/>`;
+    `<ellipse class="mnw" cx="${nx1}" cy="${y1}" rx="${rx}" ry="${ry}" transform="rotate(-18 ${nx1} ${y1})"${col?` style="fill:${col}"`:''}/>`;
 }
 
 function buildPiano(){
+  const {lo,hi}=pianoRange()||{lo:PMIN,hi:PMAX};   // modo sem piano: constrói o completo (oculto)
   let s='', x=PAD;
   const whiteX=new Map();
-  for(let m=PMIN;m<=PMAX;m++){
+  for(let m=lo;m<=hi;m++){
     const pc=m%12;
     if([1,3,6,8,10].includes(pc)) continue;
     whiteX.set(m,x);
     const ni=noteInfo(m);
     const lab = pc===0 ? ni.solf+ni.oct : ni.solf;
-    const clef = (m===PMIN || m===60);          // Lá1 (1ª tecla, Fá) e Dó4 (1ª da região de Sol)
+    const clef = (m===lo && m<60) || m===60;   // 1ª tecla (região de Fá) e Dó4 (região de Sol)
     s+=`<g data-midi="${m}" class="wkg"><path class="wk" d="${keyPath(x,PAD,WKW,WKH,6)}"/>`+
        miniStaff(m, x+4, WKW-8, clef)+
        `<text class="wl" x="${x+WKW/2}" y="${PAD+WKH-12}">${lab}</text></g>`;
     x+=WKW;
   }
-  for(let m=PMIN;m<=PMAX;m++){
+  for(let m=lo;m<=hi;m++){
     const pc=m%12;
     if(![1,3,6,8,10].includes(pc)) continue;
     const nx=whiteX.get(m+1);        // fronteira com a branca seguinte
@@ -392,6 +455,11 @@ function noteOff(m){
   }catch(_){}
   held.delete(m);
 }
+/* trocar de modo pode redesenhar o teclado com outra faixa: solta o que estiver soando */
+function releaseHeld(){
+  for(const m of Array.from(held.keys())) noteOff(m);
+  pressed.clear(); ptrs.clear();
+}
 
 /* toque/clique com glissando: arrastar pelo teclado toca cada tecla atravessada */
 const ptrs=new Map();                // pointerId -> tecla atual (ou null fora do teclado)
@@ -428,6 +496,147 @@ $('piano').addEventListener('pointerup', ptrEnd);
 $('piano').addEventListener('pointercancel', ptrEnd);
 window.addEventListener('pointerup', ptrEnd);
 window.addEventListener('pointercancel', ptrEnd);
+
+/* ---------------- flauta doce (soprano, digitação germânica) ---------------- */
+/* Digitação germânica da flauta doce soprano: midi -> [polegar, furos 1..7],
+   com 1 = tampado, 0 = aberto, 2 = meio-tampado (meia-lua).
+   Escala de Dó5 (72) a Dó7 (96); a detecção de voz só alcança Ré6 (86),
+   o restante da faixa fica acessível pelos botões de referência. */
+const FLUTE={
+  72:[1,1,1,1,1,1,1,1], 73:[1,1,1,1,1,1,1,2], 74:[1,1,1,1,1,1,1,0],
+  75:[1,1,1,1,1,1,2,0], 76:[1,1,1,1,1,1,0,0], 77:[1,1,1,1,1,0,1,1],
+  78:[1,1,1,1,0,1,1,0], 79:[1,1,1,1,0,0,0,0], 80:[1,1,1,0,1,1,2,0],
+  81:[1,1,1,0,0,0,0,0], 82:[1,1,0,1,1,0,0,0], 83:[1,1,0,0,0,0,0,0],
+  84:[1,0,1,0,0,0,0,0], 85:[0,1,1,0,0,0,0,0], 86:[0,0,1,0,0,0,0,0],
+  87:[2,0,1,1,1,1,1,0], 88:[2,1,1,1,1,1,0,0], 89:[2,1,1,1,1,0,1,0],
+  90:[2,1,1,1,0,1,0,0], 91:[2,1,1,1,0,0,0,0], 92:[2,1,1,0,1,0,0,0],
+  93:[2,1,1,0,0,0,0,0], 94:[2,1,0,1,1,0,0,0], 95:[2,1,0,1,0,1,1,0],
+  96:[2,1,0,0,1,1,0,0]
+};
+/* geometria do desenho (viewBox 980×900): corpo em cápsula vertical
+   centralizado; à esquerda fica a pauta (miniStaff em escala maior) e à
+   direita o nome da nota. 7 furos frontais em duas mãos separadas por
+   linha tracejada e furo do polegar encostado na lateral direita, entre
+   os furos 1 e 2 */
+const FL={x:424, w:132, y0:60, y1:847, cx:490, r:22,
+          up:[141,235,329], lo:[463,557,651,745], div:394,
+          tx:579, ty:188, tr:20};
+/* pauta e nome perfeitamente centralizados nas suas faixas: pauta em
+   [0, FL.x] (centro 212 → x0=212−90=122) com a nota a ~65% da largura
+   (dentro da pauta, longe do fim — antes a cabeça invadia a última
+   linha); nome em [FL.x+FL.w, 980] (centro 768), text-anchor=middle
+   para centrar nomes de larguras diferentes (Fá5, Sol♯5…) */
+const FS={x:122, w:180, gap:22, bottom:497, nx:239};
+const NM={x:768, y:480};
+
+function flHole(cx,cy,r,st,dim){
+  const fechado=dim?'#39445e':'#0d1117', aberto=dim?'#4a5878':'#0d1117';
+  if(st===1) return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fechado}"/>`;
+  let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${dim?'none':'#f2f5fa'}" stroke="${aberto}" stroke-width="3"/>`;
+  if(st===2) s+=`<path d="M${cx} ${cy-r} A${r} ${r} 0 0 0 ${cx} ${cy+r} Z" fill="${fechado}"/>`;  // meia-lua esquerda
+  return s;
+}
+
+let fluteKey='';
+/* redesenha a flauta para o estado atual: nota pressionada (referência) tem
+   prioridade sobre a nota detectada; ocioso mantém a última digitação esmaecida */
+function fluteShow(){
+  const vals=[...fptrs.values()].filter(v=>v!=null);
+  const prev = vals.length ? vals[vals.length-1] : null;
+  const m = prev!=null ? prev : (idle ? null : Math.round(lastNoteMidi));
+  const ult = lastNoteMidi!=null ? Math.round(lastNoteMidi) : null;
+  const key=[m,idle,ult].join('|');
+  if(key===fluteKey) return;
+  fluteKey=key;
+  const fing = FLUTE[m!=null?m:ult] || null;        // fora da faixa: sem digitação
+  const pc = m!=null ? ((m%12)+12)%12 : null;
+  const body = m!=null ? PC_COLOR[pc] : '#232c3f';
+  const dim = m==null;
+  let s='';
+  // pauta à esquerda: clave do registro (Fá abaixo de Dó4, Sol acima) e a nota
+  // marcada na cor da classe de altura; ociosa = nota esmaecida
+  const st = m!=null ? m : ult;
+  if(st!=null) s+=miniStaff(st, FS.x, FS.w, true, FS.gap, FS.bottom, m!=null?PC_COLOR[((st%12)+12)%12]:null, FS.nx);
+  // corpo da flauta
+  s+=`<rect x="${FL.x}" y="${FL.y0}" width="${FL.w}" height="${FL.y1-FL.y0}" rx="${FL.w/2}" fill="${body}" stroke="#0d1117" stroke-width="3"/>`;
+  s+=`<line x1="${FL.x+12}" y1="${FL.div}" x2="${FL.x+FL.w-12}" y2="${FL.div}" stroke="${dim?'#4a5878':'rgba(13,17,23,.6)'}" stroke-width="3.5" stroke-dasharray="9,10"/>`;
+  if(fing){
+    s+=flHole(FL.tx,FL.ty,FL.tr,fing[0],dim);
+    for(let i=0;i<7;i++)
+      s+=flHole(FL.cx,(i<3?FL.up[i]:FL.lo[i-3]),FL.r,fing[i+1],dim);
+  }else{
+    s+=flHole(FL.tx,FL.ty,FL.tr,0,true)+FL.lo.map(y=>flHole(FL.cx,y,FL.r,0,true)).join('')+
+       FL.up.map(y=>flHole(FL.cx,y,FL.r,0,true)).join('');
+  }
+  // nome da nota, à direita da flauta
+  let nome='—', ncol='#8b98ad';
+  const nm = m!=null ? m : ult;
+  if(nm!=null){
+    const ni=noteInfo(nm);
+    nome=`${ni.solf}${ni.acc?(ni.acc==='#'?'♯':'♭'):''}<tspan font-size="34" dy="-34" fill="#8b98ad">${ni.oct}</tspan>`;
+    ncol = m!=null ? PC_COLOR[pc] : '#8b98ad';
+  }
+  // nome da nota, centrado na faixa entre a flauta e a borda direita
+  s+=`<text x="${NM.x}" y="${NM.y}" font-size="80" font-weight="700" fill="${ncol}" text-anchor="middle">${nome}</text>`;
+  $('flute').innerHTML=s;
+  // realce do botão da nota atual na faixa de referência
+  for(const b of document.querySelectorAll('#fnotes button')){
+    const on = +b.dataset.midi===m;
+    if(on){ b.style.background=PC_COLOR[(+b.dataset.midi)%12]; b.style.borderColor='#0d1117'; b.style.color='#0d1117'; }
+    else  { b.style.background=''; b.style.borderColor=''; b.style.color=''; }
+  }
+}
+
+/* faixa de notas de referência (Dó5–Dó7) em HTML, em 3 fileiras que começam
+   em Dó (grid de 12 colunas); construída uma vez, os rótulos são fixos */
+function buildFNotes(){
+  let s='';
+  for(let k=72;k<=96;k++){
+    const ni=noteInfo(k);
+    const lab=(k%12===0)?ni.solf+ni.oct:ni.solf+(ni.acc?(ni.acc==='#'?'♯':'♭'):'');
+    s+=`<button type="button" data-midi="${k}">${lab}</button>`;
+  }
+  $('fnotes').innerHTML=s;
+}
+buildFNotes();
+
+/* botões da flauta: mesma mecânica das teclas do piano — som apenas enquanto
+   pressionado; arrastar vira glissando (inclusive entre fileiras); hover do
+   mouse é só visual (borda accent). Soltar fora silencia mas mantém o ponteiro
+   vivo, que volta a tocar ao re-entrar numa nota. */
+const fptrs=new Map();                // pointerId -> nota atual (ou null fora dos botões)
+
+function fKeyAt(x,y){
+  const el=document.elementFromPoint(x,y);
+  const b=el && el.closest ? el.closest('#fnotes button[data-midi]') : null;
+  return b ? +b.dataset.midi : null;
+}
+function fSet(id,m){
+  const cur=fptrs.get(id);
+  if(cur===m) return;
+  if(cur!=null) noteOff(cur);
+  if(m!=null) noteOn(m);
+  fptrs.set(id,m);
+  fluteShow();
+}
+function fPtrEnd(e){
+  if(!fptrs.has(e.pointerId)) return;
+  fSet(e.pointerId,null);
+  fptrs.delete(e.pointerId);
+}
+$('fnotes').addEventListener('pointerdown', e=>{
+  const m=fKeyAt(e.clientX,e.clientY);
+  if(m==null) return;
+  e.preventDefault();
+  fptrs.set(e.pointerId,null);
+  fSet(e.pointerId,m);
+});
+$('fnotes').addEventListener('pointermove', e=>{
+  if(!fptrs.has(e.pointerId)) return;
+  fSet(e.pointerId, fKeyAt(e.clientX,e.clientY));
+});
+window.addEventListener('pointerup', fPtrEnd);
+window.addEventListener('pointercancel', fPtrEnd);
 
 /* ---------------- áudio ---------------- */
 function ensureCtx(){
@@ -537,6 +746,7 @@ function updateDisplay(midi){
   nn.innerHTML = info.solf + (info.acc ? `<i class="acc">${info.acc==='#'?'♯':'♭'}</i>` : '') +
                  `<span class="oct">${info.oct}</span>`;
   nn.className = 'note' + (idle?' dim':'') + (tuneClass===0?' intune':(tuneClass===1?' near':''));
+  nn.style.color = PC_COLOR[((n%12)+12)%12];   // cor da classe de altura (igual ao piano)
   const f=a4*Math.pow(2,(midi-69)/12);
   const sg=centsDisp>0?'+':(centsDisp<0?'−':'');
   $('noteSub').textContent=`${info.letter}${info.acc} · ${f.toFixed(1)} Hz · ${sg}${Math.abs(centsDisp)} cents`;
@@ -549,9 +759,11 @@ function updateDisplay(midi){
     if(med<=57 && effClef!=='fa') effClef='fa';
     else if(med>=60 && effClef!=='sol') effClef='sol';
   }
-  if(vizMode==='piano'){
+  if(pianoRange()){
     litKey(n);
-  }else{
+  }else if(vizMode==='flauta'){
+    fluteShow();
+  }else if(vizMode!=='afinador'){
     const key=[n,effClef,idle,tuneClass,bravura].join('|');
     if(key!==lastDrawKey) staffSVG();
   }
@@ -562,10 +774,13 @@ function setIdle(){
   const nn=$('noteName');
   if(shownNote===null){ nn.textContent='—'; nn.className='note'; }
   else nn.className='note dim';
+  nn.style.color='';
   $('noteSub').textContent='· · ·  ouvindo  · · ·';
   $('needle').style.left='50%';
   centsDisp=0; tuneClass=2;
-  if(vizMode==='piano') litKey(null); else staffSVG();
+  if(pianoRange()) litKey(null);
+  else if(vizMode==='flauta') fluteShow();
+  else if(vizMode!=='afinador') staffSVG();
 }
 
 function logHistory(n){
@@ -637,41 +852,55 @@ function setA4Open(on){
   $('a4body').classList.toggle('hide', !on);
 }
 function savePrefs(){
-  try{ localStorage.setItem('afinador-canto', JSON.stringify({v:vizMode, r:rd, h:hs, a:a4, o:a4Open})); }catch(_){}
-}
-function setReadout(on){
-  rd=on;
-  $('cardRead').classList.toggle('hide', !on);
-  $('tglRead').classList.toggle('on', on);
+  try{ localStorage.setItem('afinador-canto', JSON.stringify({v:vizMode, h:hs, a:a4, o:a4Open})); }catch(_){}
 }
 function setHistory(on){
   hs=on;
   $('cardHist').classList.toggle('hide', !on);
   $('tglHist').classList.toggle('on', on);
 }
+const VIZ_MODES=['auto','sol','fa','piano','afinador','flauta',...Object.keys(VOICES)];
 function loadPrefs(){
   let p=null;
   try{ p=JSON.parse(localStorage.getItem('afinador-canto')||'null'); }catch(_){}
   if(p){
-    if(['auto','sol','fa','piano'].includes(p.v)) vizMode=p.v;
+    if(VIZ_MODES.includes(p.v)) vizMode=p.v;   // 'r' (painel Leitura) é legado, ignorado
     if(typeof p.a==='number' && p.a>=415 && p.a<=465){ a4=Math.round(p.a); $('a4val').textContent=a4+' Hz'; }
-    if(typeof p.r==='boolean') rd=p.r;
     if(typeof p.h==='boolean') hs=p.h;
     if(typeof p.o==='boolean') a4Open=p.o;
   }
   /* sincroniza o DOM com o estado, seja default de 1º uso, seja pref salva */
-  setReadout(rd); setHistory(hs); setA4Open(a4Open);
+  setHistory(hs); setA4Open(a4Open);
 }
 
+function rngLbl(m){
+  const n=noteInfo(m);
+  return n.solf+(n.acc==='#'?'♯':n.acc==='b'?'♭':'')+n.oct;
+}
 function applyVizMode(){
-  for(const x of $('segClef').children) x.classList.toggle('on', x.dataset.clef===vizMode);
-  const piano = vizMode==='piano';
-  $('staff').classList.toggle('hide', piano);
-  $('piano').classList.toggle('hide', !piano);
-  $('pianoHint').classList.toggle('hide', !piano);
-  if(piano){
-    litKey(detMidi);
-  }else{
+  $('selViz').value=vizMode;
+  const pr=pianoRange(), afin=vizMode==='afinador', fla=vizMode==='flauta';
+  $('viz').classList.toggle('hide', afin);          // modo Afinador: só o painel de leitura
+  $('staff').classList.toggle('hide', !!pr || afin || fla);
+  $('piano').classList.toggle('hide', !pr);
+  $('pianoHint').classList.toggle('hide', !pr);
+  $('flute').classList.toggle('hide', !fla);
+  $('fnotes').classList.toggle('hide', !fla);
+  $('fluteHint').classList.toggle('hide', !fla);
+  $('cardRead').classList.toggle('hide', !afin);
+  $('cardRead').classList.toggle('solo', afin);
+  if(pr){
+    releaseHeld();
+    buildPiano();
+    const v=VOICES[vizMode];
+    $('pianoHint').textContent = v
+      ? `${v.nome} (${rngLbl(v.lo)}–${rngLbl(v.hi)}) — clique e segure uma tecla para ouvir a nota de referência; cante junto.`
+      : 'Clique e segure uma tecla para ouvir a nota de referência — cante junto.';
+    litKey(detMidi);                                // reaplica a tecla acesa no teclado novo
+  }else if(fla){
+    fluteKey='';                                     // força redesenho no modo salvo
+    fluteShow();
+  }else if(!afin){
     if(vizMode!=='auto') effClef=vizMode;
     else{
       const med=recentMidis.length?median(recentMidis):70;
@@ -681,14 +910,11 @@ function applyVizMode(){
   }
 }
 
-$('segClef').addEventListener('click', e=>{
-  const b=e.target.closest('button');
-  if(!b) return;
-  vizMode=b.dataset.clef;
+$('selViz').addEventListener('change', ()=>{
+  vizMode=$('selViz').value;
   applyVizMode();
   savePrefs();
 });
-$('tglRead').addEventListener('click', ()=>{ setReadout(!rd); savePrefs(); });
 $('tglHist').addEventListener('click', ()=>{ setHistory(!hs); savePrefs(); });
 $('a4tgl').addEventListener('click', ()=>{ setA4Open(!a4Open); savePrefs(); });
 $('a4up').addEventListener('click', ()=>{ a4=Math.min(465,a4+1); $('a4val').textContent=a4+' Hz'; savePrefs(); });
@@ -709,8 +935,7 @@ if(document.fonts){
 }
 
 loadPrefs();
-applyVizMode();
-buildPiano();
+applyVizMode();      // desenha a pauta ou o teclado do modo salvo
 
 /* PWA: registra o service worker (cache offline + instalação).
    Em file:// o registro não é contexto válido — o app segue igual sem ele. */

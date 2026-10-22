@@ -1,7 +1,7 @@
 /* Service worker do AfinApp — cache-first para funcionar 100% offline
    (inclusive a fonte Bravura, única dependência externa).
    Para publicar uma versão nova, aumente V: o cache antigo é descartado. */
-const V = 'afinapp-v1';
+const V = 'afinapp-v5';
 const FONT = 'https://cdn.jsdelivr.net/gh/steinbergmedia/bravura@master/redist/woff/Bravura.woff';
 
 self.addEventListener('install', e => {
